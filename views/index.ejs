@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.min.css"
+        integrity="sha512-q3eWabyZPc1XTCmF+8/LuE1ozpg5xxn7iO89yfSOd5/oKvyqLngoNGsx8jq92Y8eXJ/IRxQbEC+FGSYxtk2oiw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>
+        <%- title %>
+    </title>
+    <style rel="stylesheet">
+        @import url(https://fonts.googleapis.com/css?family=Poiret+One);
+        @import url(https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.9/css/weather-icons.min.css);
+
+        /* $border-radius: 20px; */
+        body {
+            color: #333333;
+            font-family: Arial, Helvetica, sans-serif;
+            max-width: 650px;
+            margin: 0 auto;
+            padding: 0 16px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .main-content {
+            flex-grow: 1;
+        }
+
+        header {
+            margin-top: 16px;
+            margin-bottom: 48px;
+        }
+
+        h2 {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+
+        .widget {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            display: flex;
+            height: 300px;
+            width: 600px;
+            transform: translate(-50%, -50%);
+            flex-wrap: wrap;
+            cursor: pointer;
+            border-radius: 20px;
+            box-shadow: 0 27px 55px 0 rgba(0, 0, 0, 0.3), 0 17px 17px 0 rgba(0, 0, 0, 0.15);
+        }
+
+        .weatherLocation {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            justify-content: center;
+            padding: 2rem;
+            background-color: #fafafa;
+        }
+
+        .weatherLocation button {
+            background: #080705;
+            color: #fff;
+            border: 1px solid transparent;
+        }
+
+        .weatherLocation input:focus {
+            outline: 0 none;
+        }
+
+        .widget .weatherIcon {
+            flex: 1 100%;
+            height: 60%;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            background: #FAFAFA;
+            font-family: weathericons;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            font-size: 100px;
+        }
+
+        .widget .weatherIcon i {
+            padding-top: 30px;
+        }
+
+        .widget .weatherInfo {
+            flex: 0 0 70%;
+            height: 40%;
+            background: #080705;
+            border-bottom-left-radius: 20px;
+            display: flex;
+            align-items: center;
+            color: white;
+        }
+
+        .widget .weatherInfo .temperature {
+            flex: 0 0 40%;
+            width: 100%;
+            font-size: 35px;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .widget .weatherInfo .description {
+            flex: 0 60%;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+        }
+
+        .widget .weatherInfo .description .weatherCondition {
+            text-transform: uppercase;
+            font-size: 20px;
+            font-weight: 100;
+        }
+
+        .widget .weatherInfo .description .place {
+            font-size: 15px;
+        }
+
+        .widget .date {
+            flex: 0 0 30%;
+            height: 40%;
+            background: rgb(68, 112, 207);
+            border-bottom-right-radius: 20px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            color: white;
+            font-size: 30px;
+            font-weight: 800;
+        }
+
+        p {
+            position: fixed;
+            bottom: 0%;
+            right: 2%;
+        }
+
+        p a {
+            text-decoration: none;
+            color: #E4D6A7;
+            font-size: 10px;
+        }
+    </style>
+
+    <!-- <link rel="stylesheet" href="../public/style.css" /> -->
+</head>
+
+<body>
+    <div class="main-content">
+        <header>
+            <h2>
+                <%- title %>
+            </h2>
+        </header>
+
+        <article class="widget">
+            <form class="weatherLocation"><input placeholder="location..." type="text" /><button>Seach</button>
+            </form>
+            <div class="weatherIcon"><i class="wi wi-day-cloudy"></i></div>
+            <div class="weatherInfo">
+                <div class="temperature"><span></span></div>
+                <div class="description">
+                    <div class="weatherCondition"></div>
+                    <div class="place"></div>
+                </div>
+            </div>
+            <div class="date"></div>
+        </article>
+    </div>
+    <script>
+        var fetchweather = "/weather";
+
+        const weatherform = document.querySelector('form');
+        const search = document.querySelector('input');
+        const weathericon = document.querySelector('.weatherIcon i');
+        const temp = document.querySelector('.temperature');
+        const weathercond = document.querySelector('.weatherCondition');
+        const placeelement = document.querySelector('.place');
+        const dateelement = document.querySelector('.date');
+
+
+        const months = ["January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December"];
+
+        dateelement.textContent = new Date().getDate() + "/" + months[new Date().getMonth()];
+        weatherform.addEventListener('submit', (event) => {
+            event.preventDefault();
+            // console.log(search.value);
+            placeelement.textContent = "Loading...";
+            temp.textContent = "";
+            weathercond.textContent = "";
+            const locationapi = fetchweather + "?address=" + search.value;
+            fetch(locationapi).then(response => {
+                response.json().then(data => {
+                    if (data.error) {
+                        placeelement.textContent = data.error;
+                        temp.textContent = "";
+                        weathercond.textContent = "";
+                    } else {
+                        placeelement.textContent = data.cityname;
+                        temp.textContent = (data.temperature - 273.5).toFixed(2) + "" + "C";
+                        weathercond.textContent = data.description;
+                    }
+                    console.log(data);
+                })
+            })
+        })
+    </script>
+
+    <!-- <script src="../public/script.js"></script> absolute path -->
+</body>
+
+</html>

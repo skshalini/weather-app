@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.min.css"
+        integrity="sha512-q3eWabyZPc1XTCmF+8/LuE1ozpg5xxn7iO89yfSOd5/oKvyqLngoNGsx8jq92Y8eXJ/IRxQbEC+FGSYxtk2oiw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title> Weather </title>
+</head>
+
+<body>
+    <div class="box">
+        <div class="wave_one"></div>
+        <div class="wave_two"></div>
+        <div class="wave_three"></div>
+        <div id="weathercond">
+            <i class="fas fa-sun" style="color:#eccc68"></i>
+
+        </div>
+        <div class="info">
+            <h2 class="location">
+                <i class="fas fa-street-view" style="color: #000;"></i>
+                {%location%} , {%country%}
+            </h2>
+            <p id="date">Tue | MAY 03 | 08:51PM</p>
+            <h1 class="temp">{%tempval%}&deg;C</h1>
+            <h3 class="tempmin_max">MIN {%tempminval%} | {%tempmaxval%}</h3>
+        </div>
+    </div>
+
+
+
+    <script>
+        const curdate = document.getElementById("date");
+        let weathercon = document.getElementById("weathercon");
+
+        const tempstatus = "{%status%}";
+        if (tempstatus == "Sunny" || "Clear") {
+            weathercon.innerHTML = "<i class='fas fa-sun' style='color:#eccc68'></i>"
+        }
+        else if (tempstatus == "Clouds" || "Dust") {
+            weathercon.innerHTML = "<i class='fas fa-cloud' style='color:#f1f2f6'></i>"
+        }
+        else if (tempstatus == "Haze") {
+            weathercon.innerHTML = "<i class='fas fa-cloud' style='color:#f1f2f6'></i>"
+        }
+        else if (tempstatus == "Rainy") {
+            weathercon.innerHTML = "<i class='fas fa-cloud-rain' style='color:#a4b0b6'></i>"
+        }
+        else {
+            weathercon.innerHTML = "<i class='fas fa-cloud' style='color:#44c3de'></i>"
+        }
+
+        //current day
+        const getcurrentday = () => {
+            var weekday = new Array(7);
+            weekday[0] = "Sun";
+            weekday[1] = "Mon";
+            weekday[2] = "Tue";
+            weekday[3] = "Wed";
+            weekday[4] = "Thu";
+            weekday[5] = "Fri";
+            weekday[6] = "Sat";
+
+            let currenttime = new Date();
+            let days = weekday[currenttime.getDay()];
+            return days;
+        }
+        // getcurrentday();
+
+        //current time
+        const getcurrenttime = () => {
+            const months = ["January",
+                "February",
+                "March",
+                "April",
+                "May",
+                "June",
+                "July",
+                "August",
+                "September",
+                "October",
+                "November",
+                "December"];
+            var currentTime = new Date();
+            var month = months[currentTime.getMonth()];
+            var date = currentTime.getDate();
+
+            let hours = currentTime.getHours();
+            let mins = currentTime.getMinutes();
+
+            let periods = "AM";
+
+            if (hours > 11) {
+                periods = "PM"
+                if (hours > 12) hours -= 12;
+            }
+            if (mins < 10) {
+                mins = "0" + mins;
+            }
+
+            return `${month} ${date} | ${hours}:${mins}${periods}`
+            // console.log(month + "/" + day);
+        }
+        // getcurrenttime();
+        curdate.innerHTML = getcurrentday() + " | " + getcurrenttime();
+    </script>
+</body>
+
+</html>
